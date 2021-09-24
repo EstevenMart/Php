@@ -1,10 +1,14 @@
 <?php
 
 use App\Http\Controllers\BrandController;
-use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\PersonaController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\InvoiceController;
+use App\Models\Invoice;
+use App\Models\Product;
 use Illuminate\Support\Facades\Route;
+//use Illuminate\Support\Facades\DB;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,52 +25,67 @@ Route::get('/', function () {
     return view('welcome');
 })->middleware('auth');
 
+Route::get('/nombre/{unaVariable}', function ($unaVariable) {
+    return "Nombre: ".ucwords($unaVariable);
+})->where('unaVariable' , '[A-Za-zñÑ]+');
 
 
-Route::get('/nombre/{nombre?}', [PersonaController::class , 'mostrarNombre']
-)->where('nombre', '[A-Za-zñÑ]+');
 
 
+Route::get('/numero/{documento}', [PersonaController::class, 'mostrarNombre']
+)->where('documento' , '[0-9]+');
 
-Route::get('/id/{identificacion?}', function ($identificacion = null){
-    if (!$identificacion) {
-        return "Debe enviar una identificación";
+
+Route::get('/numero/{unaVariable?}', function ($unaVariable = null) {
+
+    if(!$unaVariable){
+        //Cuando sea null ejecutar esto
+       return "Debe enviar un valor númerico";
     }
-        return "Identificación: " .number_format($identificacion );
-})->where('identificacion', '[0-9]+');
+    return number_format($unaVariable);
 
+})->where('documento' , '[0-9]+');
 
-// use Illuminate\Support\Facades\DB;
 // Route::get('/products', function () {
-
-//    // $products = DB::table('products')->get();
-
-//    $products =
-
-//     return dd($products);
-
+//   $products = DB::table('products')->get();
+//    return dd($products);
 // });
 
-Route::get('/products', [ProductController::class , "show"] );
+Route::get('/products' , [ProductController::class , "show"]);
 
-Route::get('/product/delete/{id}',[ProductController::class, 'delete'])->name('product.delete');
+Route::get('/product/delete/{id}', [ProductController::class, 'delete'])->name('product.delete');
 
 Route::get('/product/form/{id?}', [ProductController::class, 'form'])->name('product.form');
 
 Route::post('/product/save', [ProductController::class, 'save'])->name('product.save');
+//[0-9]+
 
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
-Route::get('/brands' , [BrandController::class , "show"]);
-Route::get('/brand/delete/{id}',[BrandController::class, 'delete'])->name('brand.delete');
-Route::get('/brand/formBrand/{id?}', [BrandController::class, 'form'])->name('brand.formBrand');
-Route::post('/brand/saveBrand', [BrandController::class, 'save'])->name('brand.saveBrand');
 
-Route::get('/categories' , [CategoryController::class , "show"]);
-Route::get('/categorie/delete/{id}',[CategoryController::class, 'delete'])->name('categorie.delete');
-Route::get('/categorie/formCategorie/{id?}', [CategoryController::class, 'form'])->name('categorie.formCategorie');
-Route::post('/categorie/saveCategorie', [CategoryController::class, 'save'])->name('categorie.saveCategorie');
+Route::get('/brands' , [BrandController::class, "show"]);
+
+Route::get('/brand/delete/{id}', [BrandController::class, 'delete'])->name('brand.delete');
+
+Route::get('/brand/formBrand/{id?}', [BrandController::class, 'form'])->name('brand.form');
+
+Route::post('/brand/save', [BrandController::class, 'save'])->name('brand.save');
 
 
+Route::get('/categories', [CategoryController::class, 'index'])->name('category.index');
+
+Route::get('/categories/form/{id?}', [CategoryController::class, 'form'])->name('category.form');
+
+Route::post('/categories/save', [CategoryController::class, 'save'])->name('category.save');
+
+Route::get('/category/delete/{id}', [CategoryController::class, 'delete'])->name('category.delete');
+
+// Route::get('/invoice/{id}', function($id){
+//     $invoice = App\Models\Invoice::findOrfail($id);
+//     return dd($invoice->products);
+// });
+
+Route::get('invoices', [InvoiceController::class, 'show']);
+Route::get('invoice/form', [InvoiceController::class, 'form'])->name('invoice.form');
